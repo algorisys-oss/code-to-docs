@@ -1,4 +1,4 @@
-# Code-to-Course
+# Code-to-Docs
 
 Transform any codebase into a structured, multi-page interactive course — with real code references, multi-audience explanations, and hands-on exercises.
 

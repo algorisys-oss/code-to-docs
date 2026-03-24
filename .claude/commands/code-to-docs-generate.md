@@ -3,7 +3,7 @@ description: "Generate course content for specific modules or flows. Phase 2: us
 argument-hint: "<module-name|all|--diff> [--level beginner|intermediate|advanced] [--flows]"
 ---
 
-# Code-to-Course: Phase 2 — Content Generation
+# Code-to-Docs: Phase 2 — Content Generation
 
 You are a senior software architect and educator. Your task is to generate detailed, interactive course content for specific modules of a codebase.
 

@@ -1,4 +1,4 @@
-# Code-to-Course: Shared Reference & Templates
+# Code-to-Docs: Shared Reference & Templates
 
 This file defines shared conventions, templates, and standards used by all code-to-docs skill files.
 It is NOT a command itself — it is referenced by the Phase 1 and Phase 2 skills.

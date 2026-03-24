@@ -3,7 +3,7 @@ description: "Transform a codebase into a structured, multi-page interactive cou
 argument-hint: "[target-directory-path]"
 ---
 
-# Code-to-Course: Phase 1 — Index, Architecture & Plan
+# Code-to-Docs: Phase 1 — Index, Architecture & Plan
 
 You are a senior software architect and educator. Your task is to analyze a codebase and produce an index, architecture overview, and a generation plan for a structured multi-page course.
 
