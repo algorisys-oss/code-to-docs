@@ -197,16 +197,55 @@
     }
   }
 
-  // SPA nav
+  // SPA nav — intercept both sidebar ?page= links and relative .md links in content
+  function resolveRelativeLink(href) {
+    // Already a ?page= link
+    if (href.startsWith('?page=')) return href;
+    // Only intercept .md links
+    if (!href.endsWith('.md')) return null;
+    // Ignore absolute URLs
+    if (href.startsWith('http://') || href.startsWith('https://')) return null;
+
+    // Resolve relative path against current page's directory
+    const currentPage = getCurrentPage();
+    const currentDir = currentPage.includes('/') ? currentPage.substring(0, currentPage.lastIndexOf('/') + 1) : '';
+
+    let resolved = currentDir + href;
+    // Normalize: resolve ./ and ../
+    const parts = resolved.split('/');
+    const normalized = [];
+    for (const part of parts) {
+      if (part === '.') continue;
+      if (part === '..' && normalized.length > 0) { normalized.pop(); continue; }
+      normalized.push(part);
+    }
+    return '?page=' + normalized.join('/');
+  }
+
   document.getElementById('sidebar').addEventListener('click', e => {
     const a = e.target.closest('a');
-    if (a?.getAttribute('href')?.startsWith('?')) {
+    if (!a) return;
+    const resolved = resolveRelativeLink(a.getAttribute('href'));
+    if (resolved) {
       e.preventDefault();
-      history.pushState(null, '', a.getAttribute('href'));
+      history.pushState(null, '', resolved);
       document.getElementById('sidebar').classList.remove('open');
       loadPage();
     }
   });
+
+  // Intercept relative .md links in the main content area
+  document.getElementById('content').addEventListener('click', e => {
+    const a = e.target.closest('a');
+    if (!a) return;
+    const resolved = resolveRelativeLink(a.getAttribute('href'));
+    if (resolved) {
+      e.preventDefault();
+      history.pushState(null, '', resolved);
+      loadPage();
+    }
+  });
+
   window.addEventListener('popstate', loadPage);
 
   // ---- Interactive Block Dispatcher ----
