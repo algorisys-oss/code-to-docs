@@ -74,7 +74,7 @@ Determine:
 - **External dependencies:** Databases, APIs, queues, caches
 - **Key abstractions:** The core types/interfaces that define the system's vocabulary
 
-Produce a `mermaid` diagram block (NOT ASCII) showing the architecture. Use `click` directives to link nodes to module pages. See the reference file for the Mermaid block format.
+Produce a `mermaid` diagram block (NOT ASCII) showing the architecture. Do NOT add `click` directives to link to module pages yet — those files don't exist until Phase 2. Just show the architecture structure. The `click` directives will be added when modules are generated in Phase 2.
 
 ---
 
@@ -155,10 +155,10 @@ Include:
 Level 2: Architecture Deep Dive. Write this for a developer joining the team.
 
 Include:
-- `mermaid` architecture diagram (interactive, clickable nodes linking to module pages)
-- `dep-graph` block showing module dependencies as a force-directed graph
+- `mermaid` architecture diagram (NO `click` directives — module pages don't exist yet)
+- `dep-graph` block showing module dependencies as a force-directed graph (set `"file": null` for all nodes since module pages don't exist yet)
 - `complexity-heatmap` block showing codebase structure by size and complexity
-- `arch-minimap` block for navigation context
+- `arch-minimap` block for navigation context (use only `01-overview.md` and `02-architecture.md` as page targets — module pages will be added after Phase 2)
 - Component descriptions (what each box does)
 - Data flow walkthrough with real file references
 - Control flow walkthrough with real file references

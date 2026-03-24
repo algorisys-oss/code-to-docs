@@ -133,19 +133,26 @@
       let html = '';
       html += `<a href="?page=01-overview.md">Overview</a>`;
       html += `<a href="?page=02-architecture.md">Architecture</a>`;
-      if (courseIndex.modules?.length) {
+      // Only show modules/flows that have been generated (have a course_file)
+      const generatedModules = (courseIndex.modules || []).filter(m => m.course_file);
+      const pendingModules = (courseIndex.modules || []).filter(m => !m.course_file);
+      if (generatedModules.length) {
         html += '<div class="section-label">Modules</div>';
-        courseIndex.modules.forEach((m, i) => {
-          const num = String(i + 1).padStart(2, '0');
-          const file = m.course_file || `modules/${num}-${m.name}.md`;
-          html += `<a href="?page=${file}">${m.name}</a>`;
+        generatedModules.forEach(m => {
+          html += `<a href="?page=${m.course_file}">${m.name}</a>`;
         });
       }
-      if (courseIndex.flows?.length) {
+      if (pendingModules.length) {
+        html += '<div class="section-label" style="opacity:0.5">Not yet generated</div>';
+        pendingModules.forEach(m => {
+          html += `<span style="display:block;padding:0.4rem 0.75rem;margin:0.15rem 0;font-size:0.85rem;color:var(--text-muted)">${m.name}</span>`;
+        });
+      }
+      const generatedFlows = (courseIndex.flows || []).filter(f => f.course_file);
+      if (generatedFlows.length) {
         html += '<div class="section-label">Flows</div>';
-        courseIndex.flows.forEach(f => {
-          const file = `flows/${f.name.toLowerCase().replace(/\s+/g, '-')}.md`;
-          html += `<a href="?page=${file}">${f.name}</a>`;
+        generatedFlows.forEach(f => {
+          html += `<a href="?page=${f.course_file}">${f.name}</a>`;
         });
       }
       document.getElementById('navLinks').innerHTML = html;
@@ -168,14 +175,25 @@
   async function loadPage() {
     const page = getCurrentPage();
     try {
-      const md = await (await fetch('../' + page)).text();
+      const resp = await fetch('../' + page);
+      if (!resp.ok) throw new Error(`${resp.status}`);
+      const md = await resp.text();
       document.getElementById('content').innerHTML = mdRenderer ? mdRenderer.render(md) : `<pre>${md}</pre>`;
       window.scrollTo(0, 0);
       document.title = page.replace(/\.md$/, '').replace(/.*\//, '').replace(/-/g, ' ');
       highlightActive();
       await processInteractiveBlocks();
     } catch (e) {
-      document.getElementById('content').innerHTML = `<p>Page not found: ${page}</p>`;
+      const isModule = page.startsWith('modules/') || page.startsWith('flows/');
+      document.getElementById('content').innerHTML = isModule
+        ? `<div style="padding:2rem;text-align:center;color:var(--text-muted)">
+            <h2 style="border:none">Not yet generated</h2>
+            <p>This page will be created when you run:</p>
+            <code style="font-size:1.1em">/code-to-course-generate all</code>
+            <p style="margin-top:1rem">or generate just this module:</p>
+            <code style="font-size:1.1em">/code-to-course-generate ${page.replace(/^(modules|flows)\/\d+-/, '').replace('.md', '')}</code>
+          </div>`
+        : `<p>Page not found: ${page}</p>`;
     }
   }
 
