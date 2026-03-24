@@ -189,9 +189,9 @@
         ? `<div style="padding:2rem;text-align:center;color:var(--text-muted)">
             <h2 style="border:none">Not yet generated</h2>
             <p>This page will be created when you run:</p>
-            <code style="font-size:1.1em">/code-to-course-generate all</code>
+            <code style="font-size:1.1em">/code-to-docs-generate all</code>
             <p style="margin-top:1rem">or generate just this module:</p>
-            <code style="font-size:1.1em">/code-to-course-generate ${page.replace(/^(modules|flows)\/\d+-/, '').replace('.md', '')}</code>
+            <code style="font-size:1.1em">/code-to-docs-generate ${page.replace(/^(modules|flows)\/\d+-/, '').replace('.md', '')}</code>
           </div>`
         : `<p>Page not found: ${page}</p>`;
     }

@@ -25,8 +25,8 @@ cp -r .claude/ /path/to/your/repo/.claude/
 
 Then from your repo:
 ```
-/code-to-course                    # Phase 1: index + plan
-/code-to-course-generate all       # Phase 2: generate content
+/code-to-docs                    # Phase 1: index + plan
+/code-to-docs-generate all       # Phase 2: generate content
 ```
 
 Commands are auto-discovered from `.claude/commands/`. Start a new session if you just added the files.
@@ -37,20 +37,20 @@ Copy the skill files into Cursor's rules directory:
 
 ```bash
 mkdir -p /path/to/your/repo/.cursor/rules
-cp .claude/commands/code-to-course.md /path/to/your/repo/.cursor/rules/
-cp .claude/commands/code-to-course-generate.md /path/to/your/repo/.cursor/rules/
-cp .claude/commands/code-to-course-reference.md /path/to/your/repo/.cursor/rules/
+cp .claude/commands/code-to-docs.md /path/to/your/repo/.cursor/rules/
+cp .claude/commands/code-to-docs-generate.md /path/to/your/repo/.cursor/rules/
+cp .claude/commands/code-to-docs-reference.md /path/to/your/repo/.cursor/rules/
 ```
 
 Then in Cursor chat:
 ```
-@code-to-course index this codebase
-@code-to-course-generate generate all modules
+@code-to-docs index this codebase
+@code-to-docs-generate generate all modules
 ```
 
 Or reference the files directly:
 ```
-Follow the instructions in .cursor/rules/code-to-course.md to index this codebase
+Follow the instructions in .cursor/rules/code-to-docs.md to index this codebase
 ```
 
 ### Antigravity
@@ -63,12 +63,12 @@ cp -r .claude/ /path/to/your/repo/.claude/
 
 Then in Antigravity:
 ```
-Follow the instructions in .claude/commands/code-to-course.md to index this codebase
+Follow the instructions in .claude/commands/code-to-docs.md to index this codebase
 ```
 
 After Phase 1 completes:
 ```
-Follow the instructions in .claude/commands/code-to-course-generate.md with argument: all
+Follow the instructions in .claude/commands/code-to-docs-generate.md with argument: all
 ```
 
 ### Codex (OpenAI)
@@ -81,12 +81,12 @@ cp -r .claude/commands/ /path/to/your/repo/.codex/prompts/
 
 Then in Codex:
 ```
-Read and follow the instructions in .codex/prompts/code-to-course.md to index this codebase
+Read and follow the instructions in .codex/prompts/code-to-docs.md to index this codebase
 ```
 
 After Phase 1:
 ```
-Read and follow .codex/prompts/code-to-course-generate.md with argument: all
+Read and follow .codex/prompts/code-to-docs-generate.md with argument: all
 ```
 
 ### Windsurf / Cline / Aider / Any Other Agent
@@ -97,8 +97,8 @@ The skill files are agent-agnostic markdown prompts. For any agent:
 2. Tell the agent to read and follow the prompt file:
 
 ```
-Phase 1: Read .claude/commands/code-to-course.md and follow all instructions to index this codebase
-Phase 2: Read .claude/commands/code-to-course-generate.md and follow all instructions with argument: all
+Phase 1: Read .claude/commands/code-to-docs.md and follow all instructions to index this codebase
+Phase 2: Read .claude/commands/code-to-docs-generate.md and follow all instructions with argument: all
 ```
 
 The prompts use generic instructions (read files, search for patterns, write output) that any capable coding agent can execute.
@@ -110,13 +110,13 @@ The prompts use generic instructions (read files, search for patterns, write out
 ### Phase 1: Index & Plan
 
 ```
-/code-to-course
+/code-to-docs
 ```
 
 Or specify a subdirectory for monorepos:
 
 ```
-/code-to-course backend/
+/code-to-docs backend/
 ```
 
 This produces:
@@ -129,22 +129,22 @@ This produces:
 
 Generate everything:
 ```
-/code-to-course-generate all
+/code-to-docs-generate all
 ```
 
 Generate a single module:
 ```
-/code-to-course-generate auth
+/code-to-docs-generate auth
 ```
 
 Generate only flow traces:
 ```
-/code-to-course-generate --flows
+/code-to-docs-generate --flows
 ```
 
 Regenerate only modules with changed code:
 ```
-/code-to-course-generate --diff
+/code-to-docs-generate --diff
 ```
 
 ### Keeping the Course Updated
@@ -154,7 +154,7 @@ The `--diff` flag uses a saved git SHA (`course/.last-generation-sha`) to detect
 **Manual (recommended to start):**
 ```
 # After making code changes
-/code-to-course-generate --diff
+/code-to-docs-generate --diff
 ```
 
 **Automate with a git hook (post-commit):**
@@ -162,7 +162,7 @@ The `--diff` flag uses a saved git SHA (`course/.last-generation-sha`) to detect
 # .git/hooks/post-commit
 #!/bin/bash
 if [ -f course/.last-generation-sha ]; then
-  echo "Course may be outdated. Run: /code-to-course-generate --diff"
+  echo "Course may be outdated. Run: /code-to-docs-generate --diff"
 fi
 ```
 
@@ -188,7 +188,7 @@ jobs:
             CHANGED=$(git diff --name-only $LAST_SHA HEAD -- lib/ src/ | head -5)
             if [ -n "$CHANGED" ]; then
               echo "::warning::Course is outdated. Changed files: $CHANGED"
-              echo "Run: /code-to-course-generate --diff"
+              echo "Run: /code-to-docs-generate --diff"
             fi
           fi
 ```
@@ -199,7 +199,7 @@ jobs:
   "hooks": {
     "PostCommit": [
       {
-        "command": "echo 'Tip: run /code-to-course-generate --diff to update the course'"
+        "command": "echo 'Tip: run /code-to-docs-generate --diff to update the course'"
       }
     ]
   }
@@ -208,7 +208,7 @@ jobs:
 
 **Automate with a scheduled Claude Code trigger:**
 ```
-/schedule create --name "update-course" --cron "0 9 * * 1" --prompt "/code-to-course-generate --diff"
+/schedule create --name "update-course" --cron "0 9 * * 1" --prompt "/code-to-docs-generate --diff"
 ```
 
 Pick whichever fits your workflow. The diff-aware approach is fast — it only touches modules whose source files actually changed.
@@ -298,7 +298,7 @@ Modules are tagged: **Simple** | **Moderate** | **Complex** | **Critical**
 
 ### Diff-Aware Updates
 
-After code changes, run `/code-to-course-generate --diff` to update only affected modules. Changed modules get a "What Changed" banner.
+After code changes, run `/code-to-docs-generate --diff` to update only affected modules. Changed modules get a "What Changed" banner.
 
 ## Using Without Slash Commands
 
@@ -306,19 +306,19 @@ If your agent doesn't support slash commands, you can use the prompt files direc
 
 ```
 # Phase 1: paste or reference the prompt
-"Follow the instructions in .claude/commands/code-to-course.md to index this codebase"
+"Follow the instructions in .claude/commands/code-to-docs.md to index this codebase"
 
 # Phase 2: same approach
-"Follow the instructions in .claude/commands/code-to-course-generate.md with argument: all"
+"Follow the instructions in .claude/commands/code-to-docs-generate.md with argument: all"
 ```
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `.claude/commands/code-to-course.md` | Phase 1 skill: index, architecture, plan |
-| `.claude/commands/code-to-course-generate.md` | Phase 2 skill: module & flow content generation |
-| `.claude/commands/code-to-course-reference.md` | Shared templates, conventions, 10 interactive element data formats |
+| `.claude/commands/code-to-docs.md` | Phase 1 skill: index, architecture, plan |
+| `.claude/commands/code-to-docs-generate.md` | Phase 2 skill: module & flow content generation |
+| `.claude/commands/code-to-docs-reference.md` | Shared templates, conventions, 10 interactive element data formats |
 | `templates/viewer.html` | Interactive HTML viewer with rendering pipeline for all 10 element types |
 | `templates/theme.css` | Dark/light theme stylesheet with styles for all interactive elements |
 | `CLAUDE.md` | Full specification and design philosophy |
